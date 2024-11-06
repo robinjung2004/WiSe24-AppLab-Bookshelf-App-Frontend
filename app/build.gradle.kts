@@ -56,4 +56,19 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Retrofit für API-Zugriffe
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+
+    // Coroutines für asynchrone Operationen
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+
+    // ViewModel und LiveData
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.livedata)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
 }
