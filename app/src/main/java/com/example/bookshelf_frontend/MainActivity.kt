@@ -20,29 +20,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             WiSe24AppLabBookshelfAppFrontendTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
                     BookScreen()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WiSe24AppLabBookshelfAppFrontendTheme {
-        Greeting("Android")
     }
 }
