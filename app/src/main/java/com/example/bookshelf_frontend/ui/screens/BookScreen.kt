@@ -1,4 +1,4 @@
-package com.example.bookshelf_frontend
+package com.example.bookshelf_frontend.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -19,6 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bookshelf_frontend.model.Book
+import com.example.bookshelf_frontend.model.Details
+import com.example.bookshelf_frontend.model.Reviews
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.outlined.Star as StarBorder
 
@@ -47,7 +50,7 @@ fun BookScreen(
             }
             error != null -> {
                 Text(
-                    text = "Error: ${error}",
+                    text = "Error: $error",
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .align(Alignment.Center)
@@ -109,7 +112,6 @@ fun BookScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookItem(
     book: Book,

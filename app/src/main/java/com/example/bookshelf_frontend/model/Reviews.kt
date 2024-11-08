@@ -1,4 +1,4 @@
-package com.example.bookshelf_frontend
+package com.example.bookshelf_frontend.model
 
 data class Reviews(
     val reviewer: String,

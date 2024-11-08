@@ -1,5 +1,8 @@
-package com.example.bookshelf_frontend
+package com.example.bookshelf_frontend.data
 
+import com.example.bookshelf_frontend.model.Book
+import com.example.bookshelf_frontend.model.Details
+import com.example.bookshelf_frontend.model.Reviews
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

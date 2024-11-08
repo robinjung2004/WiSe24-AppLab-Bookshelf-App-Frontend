@@ -1,7 +1,13 @@
-package com.example.bookshelf_frontend
+package com.example.bookshelf_frontend.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bookshelf_frontend.data.BookRepository
+import com.example.bookshelf_frontend.data.DetailsRepository
+import com.example.bookshelf_frontend.data.ReviewsRepository
+import com.example.bookshelf_frontend.model.Book
+import com.example.bookshelf_frontend.model.Details
+import com.example.bookshelf_frontend.model.Reviews
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

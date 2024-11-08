@@ -1,4 +1,4 @@
-package com.example.bookshelf_frontend
+package com.example.bookshelf_frontend.data
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

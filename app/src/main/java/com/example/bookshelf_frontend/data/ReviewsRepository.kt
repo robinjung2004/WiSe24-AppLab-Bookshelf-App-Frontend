@@ -1,4 +1,6 @@
-package com.example.bookshelf_frontend
+package com.example.bookshelf_frontend.data
+
+import com.example.bookshelf_frontend.model.Reviews
 
 class ReviewsRepository {
     private val bookApi = RetrofitClient.bookApi
