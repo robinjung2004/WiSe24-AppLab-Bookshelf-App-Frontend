@@ -22,6 +22,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookshelf_frontend.model.Book
 import com.example.bookshelf_frontend.model.Details
 import com.example.bookshelf_frontend.model.Reviews
+import com.example.bookshelf_frontend.ui.theme.PastelBlue
+import com.example.bookshelf_frontend.ui.theme.PastelGrayGreen
+import com.example.bookshelf_frontend.ui.theme.PastelPink
+import com.example.bookshelf_frontend.ui.theme.PastelPurple
+import com.example.bookshelf_frontend.ui.theme.PastelWhite
+import com.example.bookshelf_frontend.ui.theme.SoftPink
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.outlined.Star as StarBorder
 
@@ -118,6 +124,18 @@ fun BookItem(
     onClick: () -> Unit
 ) {
     Card(
+        colors = CardDefaults.cardColors(
+            containerColor = when (book.id % 6) {
+                0 -> PastelWhite
+                1 -> PastelPink
+                2 -> PastelBlue
+                3 -> PastelGrayGreen
+                4 -> PastelPurple
+                5 -> SoftPink
+                else -> PastelWhite
+            }
+        ),
+        elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(0.7f),

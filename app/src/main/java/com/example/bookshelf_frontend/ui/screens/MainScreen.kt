@@ -7,18 +7,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.bookshelf_frontend.ui.screens.settings.SettingsDrawer
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var notificationsEnabled by remember { mutableStateOf(false) }
 
     SettingsDrawer(
-        drawerState = drawerState,
-        notificationsEnabled = notificationsEnabled,
-        onNotificationChange = { notificationsEnabled = it }
+        drawerState = drawerState
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
