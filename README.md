@@ -50,15 +50,18 @@ com.example.bookshelf_frontend/
 │   ├── Details.kt
 │   └── Reviews.kt
 ├── ui/
+│   ├── components/
+│   │   └── ErrorState.kt  
 │   ├── screens/
-│   │   ├── book/
-│   │   │   ├── BookScreen.kt
-│   │   │   └── BookViewModel.kt
-│   │   └── settings/
-│   │       ├── SettingsDrawer.kt
-│   │       └── SettingsViewModel.kt
+│   │   ├── BookScreen.kt
+│   │   ├── BookViewModel.kt   
+│   │   ├── MainScreen.kt   
+│   │   ├── SettingsDrawer.kt
+│   │   └── SettingsViewModel.kt           
 │   └── theme/
 │       ├── Color.kt
 │       ├── Theme.kt
 │       └── Type.kt
+├── util/
+│   └── NotificationHelper.kt
 └── MainActivity.kt
