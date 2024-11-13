@@ -29,6 +29,10 @@ class BookViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _isLoadingDetails = MutableStateFlow(false)
+    val isLoadingDetails: StateFlow<Boolean> = _isLoadingDetails
+
+
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
@@ -51,14 +55,14 @@ class BookViewModel : ViewModel() {
 
     fun loadBookDetails(bookId: Int) {
         viewModelScope.launch {
+            _isLoadingDetails.value = true
             try {
-                _isLoading.value = true
                 _selectedBookDetails.value = detailsRepository.getBookDetails(bookId)
                 _selectedBookReviews.value = reviewsRepository.getReviews(bookId)
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
-                _isLoading.value = false
+                _isLoadingDetails.value = false
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookshelf_frontend.model.Book
@@ -40,11 +41,10 @@ fun BookScreen(
     val books by viewModel.books.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
-    val details by viewModel.selectedBookDetails.collectAsState()
+    val detail by viewModel.selectedBookDetails.collectAsState()
     val reviews by viewModel.selectedBookReviews.collectAsState()
 
-    val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
     var selectedBook by remember { mutableStateOf<Book?>(null) }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -81,38 +81,37 @@ fun BookScreen(
                         start = 16.dp,
                         top = 16.dp,
                         end = 16.dp,
-                        bottom = 80.dp  // Erhöhtes Padding am unteren Rand
+                        bottom = 80.dp
                     ),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(books.size) { index ->
                         val book = books[index]
-                        BookItem(book = book, onClick = {
-                            selectedBook = book
-                            viewModel.loadBookDetails(book.id)
-                            coroutineScope.launch {
-                                sheetState.show()
+                        BookItem(
+                            book = book,
+                            onClick = {
+                                selectedBook = book
+                                viewModel.loadBookDetails(book.id)
+                                showBottomSheet = true
                             }
-                        })
+                        )
                     }
                 }
             }
         }
     }
 
-    if (selectedBook != null) {
+    if (showBottomSheet && selectedBook != null) {
         BookDetailsBottomSheet(
-            sheetState = sheetState,
             book = selectedBook,
-            details = details,
+            detail = detail,
             reviews = reviews,
+            isLoading = viewModel.isLoadingDetails.collectAsState().value,
             onDismiss = {
-                coroutineScope.launch {
-                    sheetState.hide()
-                    viewModel.clearSelectedBook()
-                    selectedBook = null
-                }
+                showBottomSheet = false
+                selectedBook = null
+                viewModel.clearSelectedBook()
             }
         )
     }
@@ -163,87 +162,121 @@ fun BookItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookDetailsBottomSheet(
-    sheetState: SheetState,
     book: Book?,
-    details: Details?,
+    detail: Details?,
     reviews: List<Reviews>,
+    isLoading: Boolean,  // Neuer Parameter
     onDismiss: () -> Unit
 ) {
-    if (book != null) {
-        ModalBottomSheet(
-            onDismissRequest = onDismiss,
-            sheetState = sheetState
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()) // Ermöglicht Scrollen
-            ) {
-                // Hauptinformationen
-                Text(
-                    text = book.title,
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Text(
-                    text = book.author,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                // Details Section
-                details?.let { bookDetails ->
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Technische Details in einer Card
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        when {
+            isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            detail == null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
+                        Text(
+                            "Could not load details",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(onClick = onDismiss) {
+                            Text("Close")
+                        }
+                    }
+                }
+            }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    // Hauptinformationen
+                    Text(
+                        text = book?.title ?: "",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Text(
+                        text = book?.author ?: "",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+
+                    // Details Section
+                    detail?.let { bookDetail ->
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Technische Details in einer Card
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
                         ) {
-                            DetailRow("Year", bookDetails.year.toString())
-                            DetailRow("Type", bookDetails.type)
-                            DetailRow("Publisher", bookDetails.publisher)
-                            DetailRow("Language", bookDetails.language)
-                            DetailRow("ISBN-13", bookDetails.isbn13)
-                            DetailRow("Pages", bookDetails.pages.toString())
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                DetailRow("Year", bookDetail.year.toString())
+                                DetailRow("Type", bookDetail.type)
+                                DetailRow("Publisher", bookDetail.publisher)
+                                DetailRow("Language", bookDetail.language)
+                                DetailRow("ISBN-13", bookDetail.isbn13)
+                                DetailRow("Pages", bookDetail.pages.toString())
+                            }
+                        }
+
+                        // Beschreibung
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Description",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = bookDetail.description,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    // Reviews Section
+                    if (reviews.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Reviews",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        reviews.forEach { reviews ->
+                            ReviewCard(reviews)
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
 
-                    // Beschreibung
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Description",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = bookDetails.description,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    // Zusätzlicher Spacer am Ende für besseres Scrolling
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
-
-                // Reviews Section
-                if (reviews.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Reviews",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    reviews.forEach { review ->
-                        ReviewCard(review)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-                // Zusätzlicher Spacer am Ende für besseres Scrolling
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
