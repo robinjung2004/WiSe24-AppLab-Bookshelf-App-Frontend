@@ -1,5 +1,6 @@
 package com.example.bookshelf_frontend.ui.screens
 
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -13,26 +14,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookshelf_frontend.model.Book
 import com.example.bookshelf_frontend.model.Details
 import com.example.bookshelf_frontend.model.Reviews
+import com.example.bookshelf_frontend.ui.components.ErrorState
 import com.example.bookshelf_frontend.ui.theme.PastelBlue
 import com.example.bookshelf_frontend.ui.theme.PastelGrayGreen
 import com.example.bookshelf_frontend.ui.theme.PastelPink
 import com.example.bookshelf_frontend.ui.theme.PastelPurple
 import com.example.bookshelf_frontend.ui.theme.PastelWhite
 import com.example.bookshelf_frontend.ui.theme.SoftPink
-import kotlinx.coroutines.launch
 import androidx.compose.material.icons.outlined.Star as StarBorder
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
     modifier: Modifier = Modifier,
@@ -55,12 +55,9 @@ fun BookScreen(
                 )
             }
             error != null -> {
-                Text(
-                    text = "Error: $error",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp)
+                ErrorState(
+                    error = error,
+                    onRetry = { viewModel.loadBooks() }
                 )
             }
             books.isEmpty() -> {
@@ -122,17 +119,19 @@ fun BookItem(
     book: Book,
     onClick: () -> Unit
 ) {
+    val backgroundColor = when (book.id % 6) {
+        0 -> PastelWhite
+        1 -> PastelPink
+        2 -> PastelBlue
+        3 -> PastelGrayGreen
+        4 -> PastelPurple
+        5 -> SoftPink
+        else -> PastelWhite
+    }
+
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = when (book.id % 6) {
-                0 -> PastelWhite
-                1 -> PastelPink
-                2 -> PastelBlue
-                3 -> PastelGrayGreen
-                4 -> PastelPurple
-                5 -> SoftPink
-                else -> PastelWhite
-            }
+            containerColor = backgroundColor
         ),
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
@@ -148,11 +147,13 @@ fun BookItem(
             Text(
                 text = book.title,
                 style = MaterialTheme.typography.titleSmall,
+                color = Color.Black.copy(alpha = 0.87f),
                 modifier = Modifier.align(Alignment.Center) // Zentriert den Titel
             )
             Text(
                 text = book.author,
                 style = MaterialTheme.typography.bodySmall,
+                color = Color.Black.copy(alpha = 0.65f),
                 modifier = Modifier.align(Alignment.BottomCenter) // Positioniert den Autor unten in der Mitte
             )
         }
@@ -224,7 +225,7 @@ fun BookDetailsBottomSheet(
                     )
 
                     // Details Section
-                    detail?.let { bookDetail ->
+                    detail.let { bookDetail ->
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Technische Details in einer Card

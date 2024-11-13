@@ -40,7 +40,7 @@ class BookViewModel : ViewModel() {
         loadBooks()
     }
 
-    private fun loadBooks() {
+    fun loadBooks() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
